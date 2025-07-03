@@ -1,0 +1,19 @@
+name: "Run Package Tests"
+description: "Run tests for a specific package using Turborepo"
+inputs:
+  package:
+    description: "Package name to test"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Run tests
+      shell: bash
+      run: yarn turbo test --filter=${{ inputs.package }}
+
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-${{ inputs.package }}
+        path: packages/${{ inputs.package }}/coverage/
+        retention-days: 30

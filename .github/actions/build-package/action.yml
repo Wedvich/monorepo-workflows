@@ -1,0 +1,19 @@
+name: "Build Package"
+description: "Build a specific package using Turborepo"
+inputs:
+  package:
+    description: "Package name to build"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Build package
+      shell: bash
+      run: yarn turbo build --filter=${{ inputs.package }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ inputs.package }}
+        path: packages/${{ inputs.package }}/dist/
+        retention-days: 30
