@@ -1,0 +1,12 @@
+name: "Run Package"
+description: "Run tests and build for a specific package using Turborepo"
+inputs:
+  package:
+    description: "Package name to test and build"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Run tests and build
+      shell: bash
+      run: yarn turbo test build --filter=@monorepo/${{ inputs.package }}

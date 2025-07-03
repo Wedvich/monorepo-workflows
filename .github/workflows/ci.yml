@@ -6,9 +6,13 @@ on:
   pull_request:
     branches: [main, develop]
 
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
 jobs:
   # Detect which packages have changed
   detect-changes:
+    name: Detect changes
     runs-on: ubuntu-latest
     outputs:
       shared-changed: ${{ steps.changes.outputs.shared }}
@@ -26,20 +30,22 @@ jobs:
         id: changes
         with:
           filters: |
-            shared:
+            shared: &shared
+              - '.github/actions/**'
+              - '.github/workflows/**'
               - 'packages/shared/**'
             package-a:
+              - *shared
               - 'packages/a/**'
-              - 'packages/shared/**'
             package-b:
+              - *shared
               - 'packages/b/**'
-              - 'packages/shared/**'
             package-c:
+              - *shared
               - 'packages/c/**'
-              - 'packages/shared/**'
 
-  # Shared package jobs (runs first if shared changed)
-  test-shared:
+  # Shared package job (runs first if shared changed)
+  shared:
     runs-on: ubuntu-latest
     needs: [detect-changes]
     if: needs.detect-changes.outputs.shared-changed == 'true'
@@ -50,41 +56,19 @@ jobs:
       - name: Setup Node.js and Cache
         uses: ./.github/actions/setup-node-cache
 
-      - name: Setup Turborepo Cache
-        uses: ./.github/actions/setup-turborepo-cache
-
-      - name: Run tests
-        uses: ./.github/actions/run-package-tests
+      - name: Run tests and build
+        uses: ./.github/actions/run-package
         with:
           package: shared
 
-  build-shared:
+  # Package A job
+  a:
     runs-on: ubuntu-latest
-    needs: [test-shared]
-    if: always() && needs.test-shared.result == 'success'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js and Cache
-        uses: ./.github/actions/setup-node-cache
-
-      - name: Setup Turborepo Cache
-        uses: ./.github/actions/setup-turborepo-cache
-
-      - name: Build package
-        uses: ./.github/actions/build-package
-        with:
-          package: shared
-
-  # Package A jobs
-  test-package-a:
-    runs-on: ubuntu-latest
-    needs: [detect-changes, build-shared]
+    needs: [detect-changes, shared]
     if: |
       always() &&
       needs.detect-changes.outputs.package-a-changed == 'true' &&
-      (needs.build-shared.result == 'success' || needs.build-shared.result == 'skipped')
+      (needs.shared.result == 'success' || needs.shared.result == 'skipped')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -92,41 +76,19 @@ jobs:
       - name: Setup Node.js and Cache
         uses: ./.github/actions/setup-node-cache
 
-      - name: Setup Turborepo Cache
-        uses: ./.github/actions/setup-turborepo-cache
-
-      - name: Run tests
-        uses: ./.github/actions/run-package-tests
+      - name: Run tests and build
+        uses: ./.github/actions/run-package
         with:
           package: a
 
-  build-package-a:
+  # Package B job
+  b:
     runs-on: ubuntu-latest
-    needs: [test-package-a]
-    if: always() && needs.test-package-a.result == 'success'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js and Cache
-        uses: ./.github/actions/setup-node-cache
-
-      - name: Setup Turborepo Cache
-        uses: ./.github/actions/setup-turborepo-cache
-
-      - name: Build package
-        uses: ./.github/actions/build-package
-        with:
-          package: a
-
-  # Package B jobs
-  test-package-b:
-    runs-on: ubuntu-latest
-    needs: [detect-changes, build-shared]
+    needs: [detect-changes, shared]
     if: |
       always() &&
       needs.detect-changes.outputs.package-b-changed == 'true' &&
-      (needs.build-shared.result == 'success' || needs.build-shared.result == 'skipped')
+      (needs.shared.result == 'success' || needs.shared.result == 'skipped')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -134,41 +96,19 @@ jobs:
       - name: Setup Node.js and Cache
         uses: ./.github/actions/setup-node-cache
 
-      - name: Setup Turborepo Cache
-        uses: ./.github/actions/setup-turborepo-cache
-
-      - name: Run tests
-        uses: ./.github/actions/run-package-tests
+      - name: Run tests and build
+        uses: ./.github/actions/run-package
         with:
           package: b
 
-  build-package-b:
+  # Package C job
+  c:
     runs-on: ubuntu-latest
-    needs: [test-package-b]
-    if: always() && needs.test-package-b.result == 'success'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js and Cache
-        uses: ./.github/actions/setup-node-cache
-
-      - name: Setup Turborepo Cache
-        uses: ./.github/actions/setup-turborepo-cache
-
-      - name: Build package
-        uses: ./.github/actions/build-package
-        with:
-          package: b
-
-  # Package C jobs
-  test-package-c:
-    runs-on: ubuntu-latest
-    needs: [detect-changes, build-shared]
+    needs: [detect-changes, shared]
     if: |
       always() &&
       needs.detect-changes.outputs.package-c-changed == 'true' &&
-      (needs.build-shared.result == 'success' || needs.build-shared.result == 'skipped')
+      (needs.shared.result == 'success' || needs.shared.result == 'skipped')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -176,29 +116,7 @@ jobs:
       - name: Setup Node.js and Cache
         uses: ./.github/actions/setup-node-cache
 
-      - name: Setup Turborepo Cache
-        uses: ./.github/actions/setup-turborepo-cache
-
-      - name: Run tests
-        uses: ./.github/actions/run-package-tests
-        with:
-          package: c
-
-  build-package-c:
-    runs-on: ubuntu-latest
-    needs: [test-package-c]
-    if: always() && needs.test-package-c.result == 'success'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js and Cache
-        uses: ./.github/actions/setup-node-cache
-
-      - name: Setup Turborepo Cache
-        uses: ./.github/actions/setup-turborepo-cache
-
-      - name: Build package
-        uses: ./.github/actions/build-package
+      - name: Run tests and build
+        uses: ./.github/actions/run-package
         with:
           package: c

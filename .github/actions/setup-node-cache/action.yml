@@ -3,6 +3,10 @@ description: "Sets up Node.js with version from .nvmrc and configures Yarn cachi
 runs:
   using: "composite"
   steps:
+    - name: Enable Corepack
+      shell: bash
+      run: corepack enable
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -10,9 +14,13 @@ runs:
         cache: "yarn"
         cache-dependency-path: "yarn.lock"
 
-    - name: Enable Corepack
-      shell: bash
-      run: corepack enable
+    - name: Setup Turborepo cache
+      uses: actions/cache@v4
+      with:
+        path: .turbo
+        key: ${{ runner.os }}-turbo-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-
 
     - name: Install dependencies
       shell: bash

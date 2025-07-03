@@ -23,13 +23,8 @@ jobs:
       - name: Setup Turborepo Cache
         uses: ./.github/actions/setup-turborepo-cache
 
-      - name: Run tests
-        uses: ./.github/actions/run-package-tests
-        with:
-          package: ${{ matrix.package }}
-
-      - name: Build package
-        uses: ./.github/actions/build-package
+      - name: Run tests and build
+        uses: ./.github/actions/run-package
         with:
           package: ${{ matrix.package }}
 
