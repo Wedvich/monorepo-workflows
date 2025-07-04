@@ -329,6 +329,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@monorepo/shared-deep@workspace:packages/shared-deep":
+  version: 0.0.0-use.local
+  resolution: "@monorepo/shared-deep@workspace:packages/shared-deep"
+  dependencies:
+    "@monorepo/shared": "workspace:*"
+    "@vitest/coverage-v8": "npm:^3.2.4"
+    typescript: "npm:^5.8.3"
+    vitest: "npm:^3.2.4"
+  languageName: unknown
+  linkType: soft
+
 "@monorepo/shared@workspace:*, @monorepo/shared@workspace:packages/shared":
   version: 0.0.0-use.local
   resolution: "@monorepo/shared@workspace:packages/shared"
