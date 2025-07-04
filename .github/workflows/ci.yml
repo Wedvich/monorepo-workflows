@@ -16,9 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       shared-changed: ${{ steps.changes.outputs.shared }}
+      shared-deep-changed: ${{ steps.changes.outputs.shared-deep }}
       package-a-changed: ${{ steps.changes.outputs.package-a }}
       package-b-changed: ${{ steps.changes.outputs.package-b }}
       package-c-changed: ${{ steps.changes.outputs.package-c }}
+      package-d-changed: ${{ steps.changes.outputs.package-d }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,7 +51,7 @@ jobs:
             package-d:
               - *shared
               - *shared-deep
-              - 'packages/c/**'
+              - 'packages/d/**'
 
   # Shared package job (runs first if shared changed)
   shared:
