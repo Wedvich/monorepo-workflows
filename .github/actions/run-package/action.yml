@@ -9,4 +9,4 @@ runs:
   steps:
     - name: Run tests and build
       shell: bash
-      run: yarn turbo test build --filter=@monorepo/${{ inputs.package }}
+      run: yarn turbo test build build:docker --filter=@monorepo/${{ inputs.package }}
