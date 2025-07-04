@@ -2,10 +2,9 @@
   "name": "@monorepo/c",
   "private": true,
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc --outDir dist",
+    "build:docker": "docker build ../.. -f Dockerfile -t monorepo-c",
     "test": "vitest run --coverage"
   },
   "devDependencies": {

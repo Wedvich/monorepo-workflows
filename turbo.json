@@ -3,7 +3,12 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build", "test"],
+      "inputs": ["$TURBO_DEFAULT$", "!Dockerfile"],
       "outputs": ["dist/**"],
+      "outputLogs": "new-only"
+    },
+    "build:docker": {
+      "dependsOn": ["build"],
       "outputLogs": "new-only"
     },
     "test": {

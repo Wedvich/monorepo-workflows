@@ -2,8 +2,12 @@
   "name": "@monorepo/shared",
   "private": true,
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc --outDir dist",
     "test": "vitest run --coverage"
