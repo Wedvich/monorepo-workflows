@@ -1,0 +1,19 @@
+{
+  "name": "@monorepo/d",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --outDir dist",
+    "build:docker": "docker build ../.. -f Dockerfile -t monorepo-d",
+    "test": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@monorepo/shared": "workspace:*",
+    "@monorepo/shared-deep": "workspace:*"
+  }
+}
