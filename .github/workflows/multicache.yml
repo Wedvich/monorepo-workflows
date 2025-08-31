@@ -17,10 +17,11 @@ jobs:
           echo "This is a cache for package ${{ matrix.package }}" > ./artifacts/cache-${{ matrix.package }}.txt
 
       - name: Upload artifact
-        uses: actions/cache/save@v4
+        uses: actions/upload-artifact@v4
         with:
+          retention-days: 1
           path: artifacts
-          key: artifacts
+          name: artifacts-${{ matrix.package }}
 
   read-cache:
     name: Read cache
@@ -28,10 +29,11 @@ jobs:
     needs: create-cache
     steps:
       - name: Download artifact
-        uses: actions/cache/restore@v4
+        uses: actions/download-artifact@v5
         with:
           path: artifacts
-          key: artifacts
+          pattern: artifacts-*
+          merge-multiple: true
 
       - name: List artifacts
         run: ls -la artifacts
