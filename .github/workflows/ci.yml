@@ -5,6 +5,13 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      all:
+        description: "Run all packages"
+        type: boolean
+        default: false
+        required: false
 
 env:
   TURBO_TELEMETRY_DISABLED: 1
