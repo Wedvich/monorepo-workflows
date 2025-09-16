@@ -1,0 +1,40 @@
+name: Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      run-for-all-packages:
+        description: "Run for all packages"
+        type: boolean
+        default: false
+        required: false
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+  TURBO_TELEMETRY_DISABLED: 1
+  TURBO_SCM_BASE: ${{ github.event_name == 'pull_request' && github.base_ref || 'HEAD^' }}
+
+jobs:
+  # Detect which packages have changed
+  do-stuff:
+    name: "Detect changes (Run for all packages: ${{ inputs.run-for-all-packages }})"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and Cache
+        uses: ./.github/actions/setup-node-cache
+
+      - name: Detect changed packages
+        id: changes
+        run: |
+          changes_filter='${{ inputs.run-for-all-packages != true && format('--filter ...[{0}]', env.TURBO_SCM_BASE) || '' }}'
+
+          echo $changes_filter
+
+          yarn turbo build \
+            $changes_filter \
+            --dry json | jq -c '.packages - ["//"]'
